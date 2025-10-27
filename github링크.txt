@@ -1,0 +1,10 @@
+
+uvicorn app:app --reload
+
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+
+pip install "fastapi[all]"
+
+cd "중간과제 - 복사본"
+
+uvicorn app:app --reload

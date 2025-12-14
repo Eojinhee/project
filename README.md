@@ -1,11 +1,11 @@
 #  AI 기반 생활 폐기물 분류 시스템
 
-
 ![PyTorch](https://img.shields.io/badge/PyTorch-Framework-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=Python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=flat-square&logo=fastapi&logoColor=white)
 ![CUDA](https://img.shields.io/badge/NVIDIA_CUDA-GPU_Compute-76B900?style=flat-square&logo=nvidia&logoColor=white)
 
+---
 
 ## 1. 프로젝트 개요 및 목표
 
@@ -15,7 +15,6 @@
 | **프로젝트 목표** | 5가지 핵심 폐기물 카테고리(캔, 유리, 종이, 플라스틱, 일반쓰레기)를 정확히 식별하는 AI 모델을 구축하고 웹 서비스에 배포하여 재활용 효율 증대 |
 | **개발 동기/배경** | 복합 재질 및 오염된 폐기물의 모호한 분류로 인한 재활용 효율 저하 문제 해결 및 오분류 방지 |
 
----
 
 ### 1.1 주요 목표 요약
 

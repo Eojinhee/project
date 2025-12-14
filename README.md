@@ -258,7 +258,20 @@ AI 분류 도우미의 메인 화면입니다.
 <img width="979" height="1121" alt="1" src="https://github.com/user-attachments/assets/9474f575-482d-4937-9d66-849c089a1838" />
 <img width="859" height="923" alt="image" src="https://github.com/user-attachments/assets/9a6a3390-0057-4898-948b-043d445e10fe" />
 
-
+### 7.2 AI 분류 시스템 웹 UI (메인 화면)
+<div style="display: flex; justify-content: space-around; align-items: flex-start; margin-bottom: 20px;">
+    
+    <div style="width: 48%; text-align: center; margin: 0 1%;">
+        <img width="979" alt="메인 화면 (실시간 카메라 모드)" src="https://github.com/user-attachments/assets/9474f575-482d-4937-9d66-849c089a1838" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <p style="font-size: 0.9em; margin-top: 10px; color: #555;">실시간 카메라 모드</p>
+    </div>
+    
+    <div style="width: 48%; text-align: center; margin: 0 1%;">
+        <img width="859" alt="메인 화면 (앨범 업로드 모드)" src="https://github.com/user-attachments/assets/9a6a3390-0057-4898-948b-043d445e10fe" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <p style="font-size: 0.9em; margin-top: 10px; color: #555;">앨범 업로드 모드</p>
+    </div>
+    
+</div>
 
 ### 7.3 최종 분류 결과 화면 (문제 해결 증명) ⭐
 

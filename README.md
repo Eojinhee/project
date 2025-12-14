@@ -133,18 +133,16 @@
 
 
 ### 7.2 AI 분류 시스템 웹 UI (메인 화면)
-<img width="780" height="1034" alt="7" src="https://github.com/user-attachments/assets/a4848a47-2074-4da5-b90d-e11644ddb077" />
-
 
 <table>
   <tr>
     <td style="text-align: center; width: 50%; padding: 0 10px;">
       <img width="979" alt="메인 화면 (실시간 카메라 모드)" src="https://github.com/user-attachments/assets/9474f575-482d-4937-9d66-849c089a1838" style="max-width: 100%; height: auto;">
-      <p style="font-size: 0.9em; margin-top: 10px; color: #555;">실시간 카메라 모드</p>
+      <p style="font-size: 0.9em; margin-top: 10px; color: #555;">실시간 카메라 </p>
     </td>
     <td style="text-align: center; width: 50%; padding: 0 10px;">
       <img width="780" height="1034" alt="7" src="https://github.com/user-attachments/assets/a4848a47-2074-4da5-b90d-e11644ddb077" style="max-width: 100%; height: auto;">
-      <p style="font-size: 0.9em; margin-top: 10px; color: #555;">앨범 업로드 모드</p>
+      <p style="font-size: 0.9em; margin-top: 10px; color: #555;">앨범 업로드 </p>
     </td>
   </tr>
 </table>

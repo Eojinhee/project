@@ -252,12 +252,13 @@ AI 분류 도우미의 메인 화면입니다.
 
 <img width="1203" height="1021" alt="8000" src="https://github.com/user-attachments/assets/b4c9892e-562b-4e8a-b0e6-c0adc8ed5a03" />
 
-\[여기에 Uvicorn running on http://127.0.0.1:8000 로그가 보이는 터미널 캡처 이미지를 삽입하세요]
+
 
 ### 7.2 AI 분류 시스템 웹 UI (메인 화면)
-\[여<img width="979" height="1121" alt="1" src="https://github.com/user-attachments/assets/9474f575-482d-4937-9d66-849c089a1838" /><img width="859" height="923" alt="image" src="https://github.com/user-attachments/assets/9a6a3390-0057-4898-948b-043d445e10fe" />
+<img width="979" height="1121" alt="1" src="https://github.com/user-attachments/assets/9474f575-482d-4937-9d66-849c089a1838" />
+<img width="859" height="923" alt="image" src="https://github.com/user-attachments/assets/9a6a3390-0057-4898-948b-043d445e10fe" />
 
-기에 프로젝트의 메인 웹 UI 캡처 이미지를 삽입하세요]
+
 
 ### 7.3 최종 분류 결과 화면 (문제 해결 증명) ⭐
 
@@ -266,8 +267,10 @@ AI 분류 도우미의 메인 화면입니다.
 | **업로드된 이미지** | 흰색 배경에 놓인 일반쓰레기 (칫솔, 오염된 비닐 등) 사진 |
 | **AI 분석 결과** | **일반쓰레기 (General)** |
 | **신뢰도** | **[분류 시 나온 실제 신뢰도]%** |
+<img width="868" height="1002" alt="3" src="https://github.com/user-attachments/assets/966eeb20-3549-442a-9b38-19e6be0312b1" />
+<img width="815" height="1016" alt="4" src="https://github.com/user-attachments/assets/eab8d7dd-b77d-409c-b789-c3e3298615e1" />
 
-\[여기에 일반쓰레기(General)가 높은 신뢰도로 정확하게 분류된 웹 UI 캡처 이미지를 삽입하세요]
+
 
 ---
 

@@ -140,23 +140,22 @@
 
 ### 7.3 최종 분류 결과 화면 (문제 해결 증명) 
 
+<img width="868" height="1002" alt="3" src="https://github.com/user-attachments/assets/966eeb20-3549-442a-9b38-19e6be0312b1" />
 | 항목 | 내용 |
 | :--- | :--- |
 | **업로드된 이미지** | 일반쓰레기 봉투 사진 |
 | **AI 분석 결과** | **일반쓰레기 (General)** |
 | **신뢰도** | **[100]%** |
-<img width="868" height="1002" alt="3" src="https://github.com/user-attachments/assets/966eeb20-3549-442a-9b38-19e6be0312b1" />
 
 ---
+
+<img width="815" height="1016" alt="4" src="https://github.com/user-attachments/assets/eab8d7dd-b77d-409c-b789-c3e3298615e1" />
 
 | 항목 | 내용 |
 | :--- | :--- |
 | **업로드된 이미지** | 흰색 배경에 놓인 패트병 사진 |
 | **AI 분석 결과** | **플라스틱 (Plastic)** |
 | **신뢰도** | **[99.8]%** |
-<img width="815" height="1016" alt="4" src="https://github.com/user-attachments/assets/eab8d7dd-b77d-409c-b789-c3e3298615e1" />
-
-
 
 ---
 

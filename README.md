@@ -159,13 +159,13 @@
 
 ---
 
-<img width="815" height="1016" alt="4" src="https://github.com/user-attachments/assets/eab8d7dd-b77d-409c-b789-c3e3298615e1" />
+<img width="560" height="659" alt="image (1)" src="https://github.com/user-attachments/assets/221171f5-6f8e-4b5b-a61b-97e1a08bf0fd" />
 
 | 항목 | 내용 |
 | :--- | :--- |
-| **업로드된 이미지** | 흰색 배경에 놓인 패트병 사진 |
+| **업로드된 이미지** |  패트병 사진 |
 | **AI 분석 결과** | **플라스틱 (Plastic)** |
-| **신뢰도** | **[99.8]%** |
+| **신뢰도** | **[98.1]%** |
 
 ---
 

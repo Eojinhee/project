@@ -143,10 +143,10 @@ AI 분류 도우미의 메인 화면입니다.
 
 
 
-#  [2025학년도 캡스톤디자인 최종보고서]
 
-#  EfficientNet 기반 실시간 생활 폐기물 분류 시스템
-**(Real-time Waste Classification System based on EfficientNet)**
+
+#  AI 기반 생활 폐기물 분류 시스템
+---
 
 ## 🌟 1. 프로젝트 개요 및 목표
 

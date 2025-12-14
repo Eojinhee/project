@@ -146,7 +146,9 @@
 | **AI 분석 결과** | **일반쓰레기 (General)** |
 | **신뢰도** | **[100]%** |
 <img width="868" height="1002" alt="3" src="https://github.com/user-attachments/assets/966eeb20-3549-442a-9b38-19e6be0312b1" />
+
 ---
+
 | 항목 | 내용 |
 | :--- | :--- |
 | **업로드된 이미지** | 흰색 배경에 놓인 패트병 사진 |

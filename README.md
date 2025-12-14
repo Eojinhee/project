@@ -164,12 +164,8 @@
 
 * Tan, M., & Le, Q. V. (2019). EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks.
 * PyTorch Documentation and Tutorials.
-* **[주요 데이터셋 출처]** [(Waste Classification Dataset, Kaggle Repository)](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification)
-* **[ 보강 데이터]** (Google Image Search and Manual Collection for specific General Waste types)
+* **[주요 데이터 출처]** [(Waste Classification Dataset, Kaggle Repository)](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification)
+* **[ 보강 데이터 출처]** (Google Image Search and Manual Collection for specific General Waste types)
 
 
 
-1.  Tan, M., & Le, Q. V. (2019). **EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks.** *ICML 2019.* (EfficientNet 모델의 원천 이론 제공)
-2.  PyTorch 개발자 커뮤니티. **PyTorch Official Documentation and API Reference.** (모델 구축 및 전이 학습 구현에 사용된 핵심 프레임워크 문서)
-3.  **Waste Classification Dataset**, Kaggle Repository. (주요 학습 데이터셋 출처)
-4.  **[보강 데이터 출처]** Google Image Search and Manual Collection for specific General Waste types.

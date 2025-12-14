@@ -1,417 +1,628 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="ko">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>AI 쓰레기 분류 도우미</title>-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+<!--    <script src="https://unpkg.com/lucide@latest"></script>-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">-->
+<!--    <style>-->
+<!--        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }-->
+<!--        .result-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }-->
+<!--        .result-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }-->
+<!--        /* 카메라 화면 스타일 */-->
+<!--        #video-feed { transform: scaleX(-1); } /* 셀카 모드일 때 거울모드 */-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body class="p-4 md:p-8 min-h-screen flex items-center justify-center">-->
+
+<!--    <div class="w-full max-w-2xl bg-white p-6 md:p-10 rounded-xl shadow-2xl">-->
+<!--        <header class="text-center mb-6">-->
+<!--            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 flex items-center justify-center">-->
+<!--                <i data-lucide="recycle" class="w-8 h-8 mr-3 text-green-600"></i>-->
+<!--                AI 분리수거 도우미-->
+<!--            </h1>-->
+<!--            <p class="mt-2 text-gray-500">카메라로 쓰레기를 비추면 AI가 분석합니다.</p>-->
+<!--        </header>-->
+
+<!--        <div class="flex justify-center mb-6 bg-gray-100 p-1 rounded-lg">-->
+<!--            <button id="tab-camera" class="w-1/2 py-2 rounded-md font-bold text-sm transition bg-white shadow text-green-700">-->
+<!--                <i data-lucide="camera" class="inline w-4 h-4 mr-1"></i> 실시간 카메라-->
+<!--            </button>-->
+<!--            <button id="tab-upload" class="w-1/2 py-2 rounded-md font-bold text-sm text-gray-500 transition hover:bg-gray-200">-->
+<!--                <i data-lucide="image" class="inline w-4 h-4 mr-1"></i> 앨범 업로드-->
+<!--            </button>-->
+<!--        </div>-->
+
+<!--        <div id="camera-section" class="flex flex-col items-center">-->
+<!--            <div class="relative w-full aspect-[4/3] bg-black rounded-lg overflow-hidden shadow-inner mb-4">-->
+<!--                <video id="video-feed" autoplay playsinline class="w-full h-full object-cover"></video>-->
+<!--                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">-->
+<!--                    <div class="w-48 h-48 border-2 border-white/50 rounded-lg"></div> </div>-->
+<!--            </div>-->
+
+<!--            <button id="capture-btn" class="w-full py-4 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow-lg flex items-center justify-center text-lg">-->
+<!--                <i data-lucide="aperture" class="w-6 h-6 mr-2"></i>-->
+<!--                찰칵! 촬영 및 분석-->
+<!--            </button>-->
+<!--        </div>-->
+
+<!--        <div id="upload-section" class="hidden">-->
+<!--            <div id="upload-area" class="border-2 border-dashed border-gray-300 p-10 rounded-lg text-center cursor-pointer hover:border-green-500 transition bg-gray-50">-->
+<!--                <input type="file" id="file-input" accept="image/*" class="hidden">-->
+<!--                <i data-lucide="cloud-upload" class="w-12 h-12 mx-auto text-gray-400 mb-3"></i>-->
+<!--                <p class="text-gray-600 font-semibold">이미지 드래그 또는 클릭</p>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div id="result-section" class="mt-8 hidden border-t pt-6">-->
+<!--            <div id="loading-indicator" class="hidden text-center py-4">-->
+<!--                <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-green-500 mx-auto mb-3"></div>-->
+<!--                <p class="text-gray-600 font-medium animate-pulse">AI가 쓰레기를 분석 중입니다...</p>-->
+<!--            </div>-->
+
+<!--            <img id="captured-preview" class="w-32 h-32 object-cover rounded-lg mx-auto mb-4 border hidden" alt="촬영된 이미지">-->
+
+<!--            <div id="classification-result" class="flex flex-col gap-4"></div>-->
+<!--        </div>-->
+
+<!--        <canvas id="canvas" class="hidden"></canvas>-->
+<!--    </div>-->
+
+<!--    <script>-->
+<!--        // [ 핵심 수정] 서버가 실행될 8000 포트와 예측 API 경로로 변경-->
+<!--        const API_ENDPOINT = "http://127.0.0.1:8000/predict";-->
+
+<!--        // DOM 요소 가져오기-->
+<!--        const tabCamera = document.getElementById('tab-camera');-->
+<!--        const tabUpload = document.getElementById('tab-upload');-->
+<!--        const cameraSection = document.getElementById('camera-section');-->
+<!--        const uploadSection = document.getElementById('upload-section');-->
+
+<!--        const video = document.getElementById('video-feed');-->
+<!--        const canvas = document.getElementById('canvas');-->
+<!--        const captureBtn = document.getElementById('capture-btn');-->
+<!--        const fileInput = document.getElementById('file-input');-->
+<!--        const uploadArea = document.getElementById('upload-area');-->
+
+<!--        const resultSection = document.getElementById('result-section');-->
+<!--        const loadingIndicator = document.getElementById('loading-indicator');-->
+<!--        const resultDiv = document.getElementById('classification-result');-->
+<!--        const capturedPreview = document.getElementById('captured-preview');-->
+
+<!--        let stream = null;-->
+
+<!--        // -&#45;&#45; 탭 전환 로직 -&#45;&#45;-->
+<!--        tabCamera.addEventListener('click', () => {-->
+<!--            switchMode('camera');-->
+<!--        });-->
+
+<!--        tabUpload.addEventListener('click', () => {-->
+<!--            switchMode('upload');-->
+<!--        });-->
+
+<!--        function switchMode(mode) {-->
+<!--            resultSection.classList.add('hidden');-->
+<!--            if (mode === 'camera') {-->
+<!--                cameraSection.classList.remove('hidden');-->
+<!--                uploadSection.classList.add('hidden');-->
+<!--                tabCamera.classList.replace('text-gray-500', 'text-green-700');-->
+<!--                tabCamera.classList.add('bg-white', 'shadow');-->
+<!--                tabCamera.classList.remove('hover:bg-gray-200');-->
+
+<!--                tabUpload.classList.replace('text-green-700', 'text-gray-500');-->
+<!--                tabUpload.classList.remove('bg-white', 'shadow');-->
+<!--                startCamera();-->
+<!--            } else {-->
+<!--                cameraSection.classList.add('hidden');-->
+<!--                uploadSection.classList.remove('hidden');-->
+<!--                tabUpload.classList.replace('text-gray-500', 'text-green-700');-->
+<!--                tabUpload.classList.add('bg-white', 'shadow');-->
+<!--                tabUpload.classList.remove('hover:bg-gray-200');-->
+
+<!--                tabCamera.classList.replace('text-green-700', 'text-gray-500');-->
+<!--                tabCamera.classList.remove('bg-white', 'shadow');-->
+<!--                stopCamera();-->
+<!--            }-->
+<!--        }-->
+
+<!--        // -&#45;&#45; 카메라 기능 (IR/Virtual 충돌 해결 로직 포함) -&#45;&#45;-->
+<!--        async function startCamera() {-->
+<!--            stopCamera(); // 기존 스트림 중지-->
+
+<!--            try {-->
+<!--                // 1. 모든 미디어 장치 목록 가져오기-->
+<!--                const devices = await navigator.mediaDevices.enumerateDevices();-->
+<!--                const videoDevices = devices.filter(device => device.kind === 'videoinput');-->
+
+<!--                if (videoDevices.length === 0) {-->
+<!--                    alert("사용 가능한 비디오 입력 장치가 없습니다.");-->
+<!--                    return;-->
+<!--                }-->
+
+<!--                // 2. 적절한 카메라 장치 ID 선택 로직-->
+<!--                let selectedDeviceId = null;-->
+
+<!--                // **[핵심 로직]** IR/Virtual이 아닌 일반 내장 카메라를 우선 찾습니다.-->
+<!--                let preferredDevice = videoDevices.find(device =>-->
+<!--                    !device.label.toLowerCase().includes('ir camera') &&-->
+<!--                    !device.label.toLowerCase().includes('virtual') &&-->
+<!--                    (device.label.toLowerCase().includes('internal') || device.label.toLowerCase().includes('webcam'))-->
+<!--                );-->
+
+<!--                // 적절한 카메라를 찾지 못했다면, IR/Virtual이 아닌 첫 번째 장치를 선택합니다.-->
+<!--                if (!preferredDevice) {-->
+<!--                    preferredDevice = videoDevices.find(device =>-->
+<!--                        !device.label.toLowerCase().includes('ir camera') &&-->
+<!--                        !device.label.toLowerCase().includes('virtual')-->
+<!--                    );-->
+<!--                }-->
+
+<!--                // 여전히 못 찾았다면, 목록의 첫 번째 장치를 사용합니다.-->
+<!--                selectedDeviceId = preferredDevice ? preferredDevice.deviceId : videoDevices[0].deviceId;-->
+
+<!--                // 3. 선택된 장치 ID를 사용하여 스트림 요청-->
+<!--                stream = await navigator.mediaDevices.getUserMedia({-->
+<!--                    video: {-->
+<!--                        deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,-->
+<!--                        facingMode: 'user' // 기본적으로 전면(내장) 카메라를 요청-->
+<!--                    }-->
+<!--                });-->
+
+<!--                // 4. 비디오 요소에 스트림 연결-->
+<!--                video.srcObject = stream;-->
+<!--            } catch (err) {-->
+<!--                console.error("카메라 접근 실패:", err);-->
+<!--                alert("카메라를 사용할 수 없습니다. (에러: " + err.name + ")\n\n" +-->
+<!--                      "여러 개의 카메라 장치(IR, 가상 카메라 등)가 충돌하고 있을 수 있습니다.\n" +-->
+<!--                      "장치 관리자에서 사용하지 않는 카메라(IR, Virtual)를 '사용 안 함'으로 설정 후 다시 시도해보세요.");-->
+<!--            }-->
+<!--        }-->
+
+<!--        function stopCamera() {-->
+<!--            if (stream) {-->
+<!--                stream.getTracks().forEach(track => track.stop());-->
+<!--                video.srcObject = null;-->
+<!--            }-->
+<!--        }-->
+
+<!--        // -&#45;&#45; 촬영 및 분석 요청 (중략) -&#45;&#45;-->
+<!--        captureBtn.addEventListener('click', () => {-->
+<!--            if (!stream) return;-->
+
+<!--            canvas.width = video.videoWidth;-->
+<!--            canvas.height = video.videoHeight;-->
+<!--            const context = canvas.getContext('2d');-->
+<!--            context.drawImage(video, 0, 0, canvas.width, canvas.height);-->
+
+<!--            canvas.toBlob((blob) => {-->
+<!--                const file = new File([blob], "capture.jpg", { type: "image/jpeg" });-->
+
+<!--                capturedPreview.src = URL.createObjectURL(blob);-->
+<!--                capturedPreview.classList.remove('hidden');-->
+
+<!--                classifyImage(file);-->
+<!--            }, 'image/jpeg');-->
+<!--        });-->
+
+<!--        // -&#45;&#45; 파일 업로드 로직 (중략) -&#45;&#45;-->
+<!--        uploadArea.addEventListener('click', () => fileInput.click());-->
+<!--        fileInput.addEventListener('change', (e) => {-->
+<!--            if (e.target.files.length > 0) classifyImage(e.target.files[0]);-->
+<!--        });-->
+
+<!--        // -&#45;&#45; AI 분석 함수 (중략) -&#45;&#45;-->
+<!--        async function classifyImage(file) {-->
+<!--            resultSection.classList.remove('hidden');-->
+<!--            loadingIndicator.classList.remove('hidden');-->
+<!--            resultDiv.innerHTML = '';-->
+
+<!--            const formData = new FormData();-->
+<!--            formData.append('file', file);-->
+
+<!--            try {-->
+<!--                const response = await fetch(API_ENDPOINT, {-->
+<!--                    method: 'POST',-->
+<!--                    body: formData,-->
+<!--                });-->
+
+<!--                if (!response.ok) {-->
+<!--                    const errorText = await response.text();-->
+<!--                    try {-->
+<!--                        const errorJson = JSON.parse(errorText);-->
+<!--                        throw new Error(`Server Error (${response.status}): ${errorJson.detail || errorJson.message || '알 수 없는 서버 오류'}`);-->
+<!--                    } catch {-->
+<!--                        throw new Error("Server Error");-->
+<!--                    }-->
+<!--                }-->
+
+<!--                const data = await response.json();-->
+
+<!--                // 파일 업로드 시 미리보기 표시 추가-->
+<!--                if (fileInput.files.length > 0 && !capturedPreview.classList.contains('hidden')) {-->
+<!--                     capturedPreview.src = URL.createObjectURL(file);-->
+<!--                     capturedPreview.classList.remove('hidden');-->
+<!--                } else if (fileInput.files.length > 0) {-->
+<!--                     capturedPreview.src = URL.createObjectURL(file);-->
+<!--                     capturedPreview.classList.remove('hidden');-->
+<!--                }-->
+
+
+<!--                displayResult(data);-->
+
+<!--            } catch (error) {-->
+<!--                console.error("분석 중 오류 발생:", error);-->
+<!--                resultDiv.innerHTML = `<p class="text-red-500 text-center font-bold">오류가 발생했습니다.<br>서버가 켜져있는지 (${API_ENDPOINT}) 확인해주세요.</p>`;-->
+<!--            } finally {-->
+<!--                loadingIndicator.classList.add('hidden');-->
+<!--            }-->
+<!--        }-->
+
+<!--        // -&#45;&#45; 결과 표시 (디자인 업그레이드) -&#45;&#45;-->
+<!--        function displayResult(result) {-->
+<!--            // Top 1 결과-->
+<!--            const label = result.predicted_class;-->
+<!--            const confidence = (result.confidence).toFixed(1);-->
+<!--            const style = getCategoryStyle(label);-->
+
+<!--            const html = `-->
+<!--                <div class="result-card bg-white border-l-8 border-${style.color}-500 rounded-lg p-6 shadow-lg flex items-center justify-between">-->
+<!--                    <div>-->
+<!--                        <p class="text-sm text-gray-500 font-bold mb-1">AI 분석 결과 (신뢰도 ${confidence}%)</p>-->
+<!--                        <h2 class="text-4xl font-extrabold text-${style.color}-600 mb-2">${style.display_name}</h2>-->
+<!--                        <p class="text-gray-600 text-sm">${style.desc}</p>-->
+<!--                    </div>-->
+<!--                    <div class="bg-${style.color}-100 p-4 rounded-full text-${style.color}-600">-->
+<!--                        <i data-lucide="${style.icon}" class="w-12 h-12"></i>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            `;-->
+<!--            resultDiv.innerHTML = html;-->
+<!--            lucide.createIcons();-->
+<!--        }-->
+
+<!--        // 카테고리별 스타일 정의-->
+<!--        function getCategoryStyle(label) {-->
+<!--            const map = {-->
+<!--                'plastic': { display_name: '플라스틱', icon: 'package', color: 'blue', desc: '내용물을 비우고 헹궈서 배출하세요.' },-->
+<!--                'paper': { display_name: '종이', icon: 'book-open', color: 'yellow', desc: '이물질이 묻지 않게 펼쳐서 배출하세요.' },-->
+<!--                // [수정 완료]: 캔 클래스에 금속류 포함 명시-->
+<!--                'can': { display_name: '캔 (금속류)', icon: 'coffee', color: 'orange', desc: '내용물을 비우고 찌그러뜨려 배출하세요.' },-->
+<!--                'glass': { display_name: '유리', icon: 'flask-conical', color: 'indigo', desc: '깨지지 않게 주의하여 배출하세요.' },-->
+<!--                'general': { display_name: '일반쓰레기', icon: 'trash-2', color: 'red', desc: '종량제 봉투에 담아 버리세요.' },-->
+<!--                'error': { display_name: '분류 오류', icon: 'alert-triangle', color: 'gray', desc: '모델 로드 또는 통신에 실패했습니다.' }-->
+<!--            };-->
+<!--            return map[label] || { display_name: '알 수 없음', icon: 'help-circle', color: 'gray', desc: '분류할 수 없습니다.' };-->
+<!--        }-->
+
+<!--        // 초기 실행: 카메라 시작-->
+<!--        switchMode('camera');-->
+<!--        lucide.createIcons();-->
+<!--    </script>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 쓰레기 분류 도우미</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons (아이콘 사용을 위해 로드) -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f9fb;
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .result-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .result-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        /* 카메라 화면 스타일 */
+        #video-feed { transform: scaleX(-1); } /* 셀카 모드일 때 거울모드 */
+
+        /* ⚠️ 추가된 경고 CSS */
+        @keyframes pulse-warn {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
         }
-        /* Custom styles for the result icons */
-        .result-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .result-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        /* Top 1 result card shadow for emphasis */
-        .result-card-primary {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        .alert-pulse {
+            animation: pulse-warn 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
 
     <div class="w-full max-w-2xl bg-white p-6 md:p-10 rounded-xl shadow-2xl">
-        <header class="text-center mb-8">
+        <header class="text-center mb-6">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-800 flex items-center justify-center">
                 <i data-lucide="recycle" class="w-8 h-8 mr-3 text-green-600"></i>
                 AI 분리수거 도우미
             </h1>
-            <p class="mt-2 text-gray-500">사진을 올려주시면 AI가 올바른 분리수거 방법을 알려드립니다.</p>
+            <p class="mt-2 text-gray-500">카메라로 쓰레기를 비추면 AI가 분석합니다.</p>
         </header>
 
-        <!-- Notification/Message Box -->
-        <div id="message-box" class="hidden p-3 mb-4 rounded-lg text-sm font-medium border" role="alert"></div>
-
-        <!-- Image Upload Section -->
-        <div id="upload-area" class="border-2 border-dashed border-gray-300 p-8 rounded-lg text-center cursor-pointer hover:border-green-500 transition duration-300 bg-gray-50">
-            <input type="file" id="file-input" accept="image/*" class="hidden">
-            <i data-lucide="cloud-upload" class="w-10 h-10 mx-auto text-gray-400 mb-2"></i>
-            <p class="text-gray-600 font-semibold">여기에 이미지를 드래그하거나 클릭하여 업로드</p>
-            <p class="text-xs text-gray-400 mt-1">(JPEG, PNG 파일 권장)</p>
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mb-6 rounded-lg alert-pulse" role="alert">
+            <div class="flex">
+                <i data-lucide="lightbulb" class="w-5 h-5 mr-3 flex-shrink-0 mt-0.5"></i>
+                <div>
+                    <p class="font-bold">분석 정확도 향상 팁!</p>
+                    <p class="text-sm">현재 AI 모델은 흰색 배경에서 일반쓰레기를 **오분류**하는 경향이 있습니다. 물체를 **대비되는 어두운 배경** 위에 놓고 촬영하면 더 정확한 결과를 얻을 수 있습니다.</p>
+                </div>
+            </div>
         </div>
-
-        <div id="preview-area" class="mt-6 hidden">
-            <h2 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">업로드 미리보기</h2>
-            <img id="image-preview" class="w-full max-h-80 object-contain rounded-lg shadow-md mb-4" alt="업로드 이미지 미리보기">
-            <button id="classify-button" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-300 shadow-md flex items-center justify-center disabled:opacity-50" disabled>
-                <i data-lucide="zap" class="w-5 h-5 mr-2"></i>
-                AI 분류 시작
+        <div class="flex justify-center mb-6 bg-gray-100 p-1 rounded-lg">
+            <button id="tab-camera" class="w-1/2 py-2 rounded-md font-bold text-sm transition bg-white shadow text-green-700">
+                <i data-lucide="camera" class="inline w-4 h-4 mr-1"></i> 실시간 카메라
+            </button>
+            <button id="tab-upload" class="w-1/2 py-2 rounded-md font-bold text-sm text-gray-500 transition hover:bg-gray-200">
+                <i data-lucide="image" class="inline w-4 h-4 mr-1"></i> 앨범 업로드
             </button>
         </div>
 
-        <!-- Result Section -->
-        <div id="result-section" class="mt-8 hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-                <i data-lucide="clipboard-list" class="w-6 h-6 mr-2 text-green-600"></i>
-                분류 결과
-            </h2>
-            
-            <div id="loading-indicator" class="hidden text-center p-8">
-                <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-500 mx-auto mb-3"></div>
-                <p class="text-gray-600">AI가 쓰레기를 분석 중입니다...</p>
+        <div id="camera-section" class="flex flex-col items-center">
+            <div class="relative w-full aspect-[4/3] bg-black rounded-lg overflow-hidden shadow-inner mb-4">
+                <video id="video-feed" autoplay playsinline class="w-full h-full object-cover"></video>
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div class="w-48 h-48 border-2 border-white/50 rounded-lg"></div> </div>
             </div>
 
-            <div id="classification-result" class="flex flex-col gap-4">
-                <!-- Classification result (Top 3) will be injected here -->
-            </div>
-            
-            <!-- Guidance Box -->
-            <div id="guidance-box" class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800 hidden">
-                <p class="font-semibold mb-1">🚨 유의사항:</p>
-                <p>AI 분류는 참고용이며, 최종 분리수거는 해당 지자체의 규정을 따르셔야 합니다. (모델 버전: EfficientNet_V2.1)</p>
+            <button id="capture-btn" class="w-full py-4 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow-lg flex items-center justify-center text-lg">
+                <i data-lucide="aperture" class="w-6 h-6 mr-2"></i>
+                찰칵! 촬영 및 분석
+            </button>
+        </div>
+
+        <div id="upload-section" class="hidden">
+            <div id="upload-area" class="border-2 border-dashed border-gray-300 p-10 rounded-lg text-center cursor-pointer hover:border-green-500 transition bg-gray-50">
+                <input type="file" id="file-input" accept="image/*" class="hidden">
+                <i data-lucide="cloud-upload" class="w-12 h-12 mx-auto text-gray-400 mb-3"></i>
+                <p class="text-gray-600 font-semibold">이미지 드래그 또는 클릭</p>
             </div>
         </div>
 
+        <div id="result-section" class="mt-8 hidden border-t pt-6">
+            <div id="loading-indicator" class="hidden text-center py-4">
+                <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-green-500 mx-auto mb-3"></div>
+                <p class="text-gray-600 font-medium animate-pulse">AI가 쓰레기를 분석 중입니다...</p>
+            </div>
+
+            <img id="captured-preview" class="w-32 h-32 object-cover rounded-lg mx-auto mb-4 border hidden" alt="촬영된 이미지">
+
+            <div id="classification-result" class="flex flex-col gap-4"></div>
+        </div>
+
+        <canvas id="canvas" class="hidden"></canvas>
     </div>
 
     <script>
-        // API Endpoint (FastAPI 서버 주소)
-        // 로컬 환경에서 FastAPI 서버를 띄울 경우 아래 주소를 사용합니다.
-        const API_ENDPOINT = "http://localhost:8000/classify"; 
+        // [ 핵심 수정] 서버가 실행될 8000 포트와 예측 API 경로로 변경
+        const API_ENDPOINT = "http://127.0.0.1:8000/predict";
 
+        // DOM 요소 가져오기
+        const tabCamera = document.getElementById('tab-camera');
+        const tabUpload = document.getElementById('tab-upload');
+        const cameraSection = document.getElementById('camera-section');
+        const uploadSection = document.getElementById('upload-section');
+
+        const video = document.getElementById('video-feed');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('capture-btn');
         const fileInput = document.getElementById('file-input');
         const uploadArea = document.getElementById('upload-area');
-        const imagePreview = document.getElementById('image-preview');
-        const previewArea = document.getElementById('preview-area');
-        const classifyButton = document.getElementById('classify-button');
+
         const resultSection = document.getElementById('result-section');
-        const classificationResultDiv = document.getElementById('classification-result');
         const loadingIndicator = document.getElementById('loading-indicator');
-        const guidanceBox = document.getElementById('guidance-box');
-        const messageBox = document.getElementById('message-box');
+        const resultDiv = document.getElementById('classification-result');
+        const capturedPreview = document.getElementById('captured-preview');
 
-        let selectedFile = null;
+        let stream = null;
 
-        // --- Helper Functions ---
+        // --- 탭 전환 로직 ---
+        tabCamera.addEventListener('click', () => {
+            switchMode('camera');
+        });
 
-        /**
-         * 커스텀 메시지 박스 표시 (alert() 대신 사용)
-         * @param {string} message 표시할 메시지
-         * @param {string} type 메시지 타입 ('success', 'error', 'info')
-         */
-        function showMessage(message, type = 'info') {
-            messageBox.textContent = message;
-            messageBox.className = "p-3 mb-4 rounded-lg text-sm font-medium border";
+        tabUpload.addEventListener('click', () => {
+            switchMode('upload');
+        });
 
-            switch (type) {
-                case 'success':
-                    messageBox.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
-                    break;
-                case 'error':
-                    messageBox.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
-                    break;
-                case 'info':
-                default:
-                    messageBox.classList.add('bg-blue-100', 'border-blue-400', 'text-blue-700');
-            }
-            messageBox.classList.remove('hidden');
-        }
+        function switchMode(mode) {
+            resultSection.classList.add('hidden');
+            if (mode === 'camera') {
+                cameraSection.classList.remove('hidden');
+                uploadSection.classList.add('hidden');
+                tabCamera.classList.replace('text-gray-500', 'text-green-700');
+                tabCamera.classList.add('bg-white', 'shadow');
+                tabCamera.classList.remove('hover:bg-gray-200');
 
-        /**
-         * 파일을 읽어 미리보기를 설정합니다.
-         * @param {File} file 업로드된 파일 객체
-         */
-        function handleFile(file) {
-            if (file && file.type.startsWith('image/')) {
-                selectedFile = file;
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
-                    previewArea.classList.remove('hidden');
-                    classifyButton.disabled = false;
-                    resultSection.classList.add('hidden');
-                    classificationResultDiv.innerHTML = ''; // 이전 결과 초기화
-                    messageBox.classList.add('hidden');
-                };
-                reader.readAsDataURL(file);
+                tabUpload.classList.replace('text-green-700', 'text-gray-500');
+                tabUpload.classList.remove('bg-white', 'shadow');
+                startCamera();
             } else {
-                showMessage("이미지 파일(JPEG, PNG)만 업로드할 수 있습니다.", 'error');
-                selectedFile = null;
-                previewArea.classList.add('hidden');
-                classifyButton.disabled = true;
+                cameraSection.classList.add('hidden');
+                uploadSection.classList.remove('hidden');
+                tabUpload.classList.replace('text-gray-500', 'text-green-700');
+                tabUpload.classList.add('bg-white', 'shadow');
+                tabUpload.classList.remove('hover:bg-gray-200');
+
+                tabCamera.classList.replace('text-green-700', 'text-gray-500');
+                tabCamera.classList.remove('bg-white', 'shadow');
+                stopCamera();
             }
         }
 
-        // --- Event Listeners ---
+        // --- 카메라 기능 (IR/Virtual 충돌 해결 로직 포함) ---
+        async function startCamera() {
+            stopCamera(); // 기존 스트림 중지
 
-        // 1. 클릭으로 파일 입력 트리거
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
+            try {
+                // 1. 모든 미디어 장치 목록 가져오기
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-        // 2. 파일 입력 변경 감지
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFile(e.target.files[0]);
-            }
-        });
-
-        // 3. 드래그 앤 드롭 이벤트 처리
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (eventName === 'dragenter' || eventName === 'dragover') {
-                    uploadArea.classList.add('border-green-500', 'bg-green-50');
-                } else if (eventName === 'dragleave') {
-                    uploadArea.classList.remove('border-green-500', 'bg-green-50');
+                if (videoDevices.length === 0) {
+                    alert("사용 가능한 비디오 입력 장치가 없습니다.");
+                    return;
                 }
-            }, false);
-        });
 
-        uploadArea.addEventListener('drop', (e) => {
-            uploadArea.classList.remove('border-green-500', 'bg-green-50');
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
+                // 2. 적절한 카메라 장치 ID 선택 로직
+                let selectedDeviceId = null;
+
+                // **[핵심 로직]** IR/Virtual이 아닌 일반 내장 카메라를 우선 찾습니다.
+                let preferredDevice = videoDevices.find(device =>
+                    !device.label.toLowerCase().includes('ir camera') &&
+                    !device.label.toLowerCase().includes('virtual') &&
+                    (device.label.toLowerCase().includes('internal') || device.label.toLowerCase().includes('webcam'))
+                );
+
+                // 적절한 카메라를 찾지 못했다면, IR/Virtual이 아닌 첫 번째 장치를 선택합니다.
+                if (!preferredDevice) {
+                    preferredDevice = videoDevices.find(device =>
+                        !device.label.toLowerCase().includes('ir camera') &&
+                        !device.label.toLowerCase().includes('virtual')
+                    );
+                }
+
+                // 여전히 못 찾았다면, 목록의 첫 번째 장치를 사용합니다.
+                selectedDeviceId = preferredDevice ? preferredDevice.deviceId : videoDevices[0].deviceId;
+
+                // 3. 선택된 장치 ID를 사용하여 스트림 요청
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
+                        facingMode: 'user' // 기본적으로 전면(내장) 카메라를 요청
+                    }
+                });
+
+                // 4. 비디오 요소에 스트림 연결
+                video.srcObject = stream;
+            } catch (err) {
+                console.error("카메라 접근 실패:", err);
+                alert("카메라를 사용할 수 없습니다. (에러: " + err.name + ")\n\n" +
+                      "여러 개의 카메라 장치(IR, 가상 카메라 등)가 충돌하고 있을 수 있습니다.\n" +
+                      "장치 관리자에서 사용하지 않는 카메라(IR, Virtual)를 '사용 안 함'으로 설정 후 다시 시도해보세요.");
             }
-        });
+        }
 
-        // 4. 분류 버튼 클릭 처리
-        classifyButton.addEventListener('click', () => {
-            if (selectedFile) {
-                classifyImage(selectedFile);
-            } else {
-                showMessage("먼저 이미지를 업로드해 주세요.", 'info');
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
             }
+        }
+
+        // --- 촬영 및 분석 요청 (중략) ---
+        captureBtn.addEventListener('click', () => {
+            if (!stream) return;
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob((blob) => {
+                const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
+
+                capturedPreview.src = URL.createObjectURL(blob);
+                capturedPreview.classList.remove('hidden');
+
+                classifyImage(file);
+            }, 'image/jpeg');
         });
 
-        // --- Classification Logic ---
+        // --- 파일 업로드 로직 (중략) ---
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) classifyImage(e.target.files[0]);
+        });
 
-        /**
-         * 이미지 파일을 FastAPI 서버로 전송하고 결과를 처리합니다.
-         * @param {File} file 전송할 파일
-         */
+        // --- AI 분석 함수 (중략) ---
         async function classifyImage(file) {
-            classifyButton.disabled = true;
-            loadingIndicator.classList.remove('hidden');
             resultSection.classList.remove('hidden');
-            classificationResultDiv.innerHTML = '';
-            guidanceBox.classList.add('hidden');
-            messageBox.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+            resultDiv.innerHTML = '';
 
-            // FormData 생성 및 파일 추가
             const formData = new FormData();
             formData.append('file', file);
 
             try {
-                // **주의:** 실제 AI 모델이 없는 환경에서는 이 API 호출이 실패할 수 있습니다.
-                // 배포 전에는 반드시 FastAPI 서버를 구동해야 합니다.
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    body: formData,
+                });
 
-                const isRunningInCanvas = typeof __app_id !== 'undefined';
-                
-                let data;
-                if (!isRunningInCanvas) {
-                    // Canvas 환경이 아닐 경우 (로컬 개발) FastAPI를 가정하고 실제 호출 시도
-                    const response = await fetch(API_ENDPOINT, {
-                        method: 'POST',
-                        body: formData,
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP Error: ${response.status}`);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        throw new Error(`Server Error (${response.status}): ${errorJson.detail || errorJson.message || '알 수 없는 서버 오류'}`);
+                    } catch {
+                        throw new Error("Server Error");
                     }
-                    data = await response.json();
-                } else {
-                    // Canvas 환경에서는 백엔드 호출이 불가능하므로 시뮬레이션 데이터 사용
-                    await new Promise(resolve => setTimeout(resolve, 1500)); // 로딩 시간 시뮬레이션
-                    // 개선된 시뮬레이션을 위해 파일명을 전달합니다.
-                    data = simulateClassification(file.name); 
                 }
+
+                const data = await response.json();
+
+                // 파일 업로드 시 미리보기 표시 추가
+                if (fileInput.files.length > 0 && !capturedPreview.classList.contains('hidden')) {
+                    capturedPreview.src = URL.createObjectURL(file);
+                    capturedPreview.classList.remove('hidden');
+                } else if (fileInput.files.length > 0) {
+                    capturedPreview.src = URL.createObjectURL(file);
+                    capturedPreview.classList.remove('hidden');
+                }
+
 
                 displayResult(data);
-                showMessage("분류가 완료되었습니다! 결과를 확인해 주세요.", 'success');
-                guidanceBox.classList.remove('hidden');
 
             } catch (error) {
-                console.error("분류 중 오류 발생:", error);
-                showMessage(`분류 서버와의 통신 중 오류가 발생했습니다. (${error.message}).`, 'error');
-                // 오류 시에도 시뮬레이션 데이터로 대체하거나 빈 결과 표시
-                classificationResultDiv.innerHTML = '<p class="text-red-500 text-center col-span-full">분류 서버 연결 실패. 로컬 FastAPI 서버가 실행 중인지 확인해 주세요.</p>';
-
+                console.error("분석 중 오류 발생:", error);
+                resultDiv.innerHTML = `<p class="text-red-500 text-center font-bold">오류가 발생했습니다.<br>서버가 켜져있는지 (${API_ENDPOINT}) 확인해주세요.</p>`;
             } finally {
                 loadingIndicator.classList.add('hidden');
-                classifyButton.disabled = false;
             }
         }
 
-        /**
-         * 분류 결과를 UI에 표시합니다. (Top 3 표시)
-         * @param {object} data 분류 결과 JSON 데이터
-         */
-        function displayResult(data) {
-            classificationResultDiv.innerHTML = '';
-            
-            // Top 3 결과만 추출
-            const topResults = data.predictions.slice(0, 3);
-            
-            let htmlContent = '';
-            
-            topResults.forEach((result, index) => {
-                const isPrimary = index === 0;
-                htmlContent += createResultCard(result.label, result.confidence, isPrimary);
-            });
-            
-            classificationResultDiv.innerHTML = htmlContent;
-            
-            // Lucide 아이콘 다시 렌더링
-            lucide.createIcons();
-        }
-
-        /**
-         * 분류 라벨에 따른 아이콘 및 색상 매핑을 정의합니다. (5개 클래스)
-         * @param {string} label 분류된 라벨
-         * @returns {object} 아이콘 이름, 색상 클래스
-         */
-        function getCategoryStyle(label) {
-            switch (label) {
-                case '플라스틱':
-                    return { icon: 'package', color: 'blue', desc: '내용물을 비우고 깨끗하게 헹궈 배출합니다. (PET병, 용기류)' };
-                case '종이':
-                    return { icon: 'book-open', color: 'yellow', desc: '물기에 젖지 않게 하고 펼쳐서 묶어 배출합니다.' };
-                case '캔':
-                    return { icon: 'coffee', color: 'green', desc: '내용물을 비우고 겉면을 헹군 뒤 압착하여 배출합니다.' };
-                case '유리':
-                    return { icon: 'flask-conical', color: 'indigo', desc: '내용물을 비우고 뚜껑을 제거한 뒤 색깔별로 분리하여 배출합니다.' };
-                case '일반쓰레기':
-                    return { icon: 'trash', color: 'red', desc: '종량제 봉투에 담아 배출합니다. (오염된 포장재, 재활용 불가 비닐)' };
-                default:
-                    return { icon: 'help-circle', color: 'gray', desc: '분류할 수 없거나 새로운 재질입니다.' };
-            }
-        }
-
-        /**
-         * 단일 분류 결과를 위한 HTML 카드를 생성합니다.
-         */
-        function createResultCard(label, confidence, isPrimary) {
+        // --- 결과 표시 (디자인 업그레이드) ---
+        function displayResult(result) {
+            // Top 1 결과
+            const label = result.predicted_class;
+            const confidence = (result.confidence).toFixed(1);
             const style = getCategoryStyle(label);
-            const colorClass = style.color;
-            const confidencePercent = (confidence * 100).toFixed(1);
 
-            if (isPrimary) {
-                // Main Result Card (Prominently styled)
-                return `
-                    <div class="result-card result-card-primary col-span-full border-t-8 border-${colorClass}-500 bg-white p-6 rounded-xl shadow-2xl transition duration-300 transform hover:scale-[1.01]">
-                        <div class="flex items-center space-x-4">
-                            <div class="p-4 rounded-full bg-${colorClass}-100 text-${colorClass}-600">
-                                <i data-lucide="${style.icon}" class="w-10 h-10"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 font-semibold">🏆 최종 예측 (Top 1)</p>
-                                <h3 class="text-4xl font-extrabold text-${colorClass}-700">${label}</h3>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 border-t border-gray-100 pt-4">
-                            <p class="text-sm font-semibold text-gray-700 mb-2">분리수거 가이드</p>
-                            <p class="text-base text-gray-600">${style.desc}</p>
-                            <p class="mt-3 text-sm text-gray-500">신뢰도: <span class="font-bold text-${colorClass}-500">${confidencePercent}%</span></p>
-                        </div>
+            const html = `
+                <div class="result-card bg-white border-l-8 border-${style.color}-500 rounded-lg p-6 shadow-lg flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 font-bold mb-1">AI 분석 결과 (신뢰도 ${confidence}%)</p>
+                        <h2 class="text-4xl font-extrabold text-${style.color}-600 mb-2">${style.display_name}</h2>
+                        <p class="text-gray-600 text-sm">${style.desc}</p>
                     </div>
-                `;
-            } else {
-                // Secondary Results (Suggestions)
-                return `
-                    <div class="result-card p-4 border border-gray-200 rounded-lg shadow-sm bg-gray-50">
-                        <div class="flex items-center space-x-3">
-                            <i data-lucide="info" class="w-4 h-4 text-gray-500"></i>
-                            <p class="text-sm font-semibold text-gray-600">추가 분류 후보 (${label})</p>
-                        </div>
-                        <p class="mt-1 text-xs text-gray-500 ml-7">신뢰도: <span class="font-bold">${confidencePercent}%</span></p>
+                    <div class="bg-${style.color}-100 p-4 rounded-full text-${style.color}-600">
+                        <i data-lucide="${style.icon}" class="w-12 h-12"></i>
                     </div>
-                `;
-            }
-        }
-
-
-        /**
-         * 서버 호출이 불가능할 때 사용할 가짜 분류 결과 데이터입니다.
-         * 파일명에 따라 시뮬레이션 결과를 조정하여, 실제 데이터 편향 문제를 간접적으로 보여줍니다.
-         * @param {string} fileName 업로드된 파일의 이름 (Canvas 환경에서만 사용)
-         * @returns {object} 시뮬레이션된 분류 결과
-         */
-        function simulateClassification(fileName = "") {
-            const lowerCaseName = fileName.toLowerCase();
-            // 5개 클래스로 확장
-            const labels = ['플라스틱', '종이', '캔', '유리', '일반쓰레기']; 
-            let primaryLabel = ''; 
-
-            // 1. 파일명 기반으로 primaryLabel 결정 (높은 정확도 시뮬레이션)
-            if (lowerCaseName.includes('종이') || lowerCaseName.includes('paper') || lowerCaseName.includes('박스')) {
-                primaryLabel = '종이';
-            } else if (lowerCaseName.includes('캔') || lowerCaseName.includes('can') || lowerCaseName.includes('콜라')) {
-                primaryLabel = '캔';
-            } else if (lowerCaseName.includes('유리') || (lowerCaseName.includes('병') && !lowerCaseName.includes('pet') && !lowerCaseName.includes('플라스틱'))) {
-                primaryLabel = '유리';
-            } else if (lowerCaseName.includes('플라스틱') || lowerCaseName.includes('pet') || lowerCaseName.includes('페트') || lowerCaseName.includes('bottle')) {
-                primaryLabel = '플라스틱'; 
-            } else if (lowerCaseName.includes('쓰레기') || lowerCaseName.includes('general') || lowerCaseName.includes('오염') || lowerCaseName.includes('비닐')) {
-                primaryLabel = '일반쓰레기';
-            } else {
-                // [개선된 로직] 파일명이 특정되지 않은 경우, 헷갈리기 쉬운 세 가지 (플라스틱, 유리, 일반쓰레기) 중 하나를 선택하여
-                // '종이'나 '캔'으로 오분류되는 경우를 줄입니다.
-                const ambiguousLabels = ['플라스틱', '유리', '일반쓰레기'];
-                primaryLabel = ambiguousLabels[Math.floor(Math.random() * ambiguousLabels.length)];
-            }
-            
-            // 2. 예측 결과 생성
-            const predictions = [];
-            const primaryConfidence = (0.90 + Math.random() * 0.09); // Top 1: 90% ~ 99%
-
-            predictions.push({ label: primaryLabel, confidence: primaryConfidence });
-
-            // 3. 나머지 신뢰도 할당 (Top 2/3 생성을 위해)
-            labels.forEach(label => {
-                if (label !== primaryLabel) {
-                    let confidence = Math.random() * 0.1; // 기본적으로 낮음
-                    
-                    // Top 2/3이 생길 수 있도록 의도적으로 두 번째로 높은 신뢰도를 만듭니다.
-                    // 예를 들어, '플라스틱'과 '일반쓰레기'는 자주 헷갈린다고 가정하고 신뢰도를 높입니다.
-                    if (primaryLabel === '플라스틱' && label === '일반쓰레기') {
-                        confidence = 0.15 + Math.random() * 0.25; // 15% ~ 40%
-                    } else if (primaryLabel === '유리' && label === '일반쓰레기') {
-                        confidence = 0.1 + Math.random() * 0.15; // 10% ~ 25%
-                    } else if (primaryLabel === '종이' && label === '일반쓰레기') {
-                        confidence = 0.05 + Math.random() * 0.15; // 5% ~ 20%
-                    }
-                    predictions.push({ label: label, confidence: confidence });
-                }
-            });
-
-            return {
-                status: "success",
-                predictions: predictions.sort((a, b) => b.confidence - a.confidence), // 신뢰도 순 정렬
-                model_version: "EfficientNet_V2.1"
-            };
-        }
-
-        // 초기 아이콘 렌더링
-        window.onload = function() {
+                </div>
+            `;
+            resultDiv.innerHTML = html;
             lucide.createIcons();
-        };
+        }
 
+        // 카테고리별 스타일 정의
+        function getCategoryStyle(label) {
+            const map = {
+                'plastic': { display_name: '플라스틱', icon: 'package', color: 'blue', desc: '내용물을 비우고 헹궈서 배출하세요.' },
+                'paper': { display_name: '종이', icon: 'book-open', color: 'yellow', desc: '이물질이 묻지 않게 펼쳐서 배출하세요.' },
+                // [수정 완료]: 캔 클래스에 금속류 포함 명시
+                'can': { display_name: '캔 (금속류)', icon: 'coffee', color: 'orange', desc: '내용물을 비우고 찌그러뜨려 배출하세요.' },
+                'glass': { display_name: '유리', icon: 'flask-conical', color: 'indigo', desc: '깨지지 않게 주의하여 배출하세요.' },
+                'general': { display_name: '일반쓰레기', icon: 'trash-2', color: 'red', desc: '종량제 봉투에 담아 버리세요.' },
+                'error': { display_name: '분류 오류', icon: 'alert-triangle', color: 'gray', desc: '모델 로드 또는 통신에 실패했습니다.' }
+            };
+            return map[label] || { display_name: '알 수 없음', icon: 'help-circle', color: 'gray', desc: '분류할 수 없습니다.' };
+        }
+
+        // 초기 실행: 카메라 시작
+        switchMode('camera');
+        lucide.createIcons();
     </script>
 </body>
 </html>
+

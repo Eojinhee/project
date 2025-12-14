@@ -1,116 +1,124 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from typing import List, Dict, Any
-from pydantic import BaseModel
-import time # 시뮬레이션 지연을 위해 필요
-from PIL import Image # 이미지 파일 처리를 위해 필요
+import os
+import torch
+import torch.nn as nn
+from torchvision import transforms, models
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import HTMLResponse, JSONResponse
+import uvicorn
+from PIL import Image
+from io import BytesIO
 
-# --------------------
-# 1. FastAPI 애플리케이션 초기화
-# --------------------
-app = FastAPI(
-    title="AI 쓰레기 분류 백엔드",
-    description="프론트엔드 (index.html)에 분류 결과를 제공하는 API 서버입니다."
-)
+# [중요] 그래픽 카드 라이브러리 충돌 방지 (WinError 1114 해결용)
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
-# --------------------
-# 2. CORS 설정 (필수! - 로컬 오류 해결)
-# --------------------
-# Failed to fetch 오류를 해결하기 위해 로컬 테스트에서는 모든 Origin을 허용합니다.
-# 실제 서비스 환경에서는 보안을 위해 origins 리스트에 특정 URL만 지정해야 합니다.
-origins = ["*"] # 모든 Origin 허용 (로컬 테스트용)
+# ==========================================
+# [설정 영역]
+# ==========================================
+MODEL_PATH = 'waste_model.pth'  # 저장된 모델 파일 이름
+NUM_CLASSES = 5
+# 클래스 이름 순서를 학습 폴더 순서와 명확히 일치시킵니다.
+CLASS_NAMES = ['can', 'general', 'glass', 'paper', 'plastic']
+DEFAULT_PORT = 8000  # 포트를 8000번으로 재설정
+# ==========================================
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# 1. 장치 설정 및 FastAPI 앱 초기화
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+app = FastAPI()
+model = None  # 모델을 전역 변수로 선언
 
-# --------------------
-# 3. 데이터 모델 정의
-# --------------------
-
-class Prediction(BaseModel):
-    label: str
-    confidence: float
-
-class ClassificationResult(BaseModel):
-    status: str
-    predictions: List[Prediction]
-    model_version: str = "EfficientNet_V2.1"
+# 2. 이미지 전처리 (trainer.py의 val_transform과 동일해야 함)
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+])
 
 
-# --------------------
-# 4. 분류 엔드포인트 정의
-# --------------------
-
-@app.post("/classify", response_model=ClassificationResult)
-async def classify_image(file: UploadFile = File(...)):
-    """
-    업로드된 이미지 파일을 받아 분류 결과를 반환합니다.
-    실제 AI 모델 추론 코드가 들어갈 위치입니다.
-    """
-    
-    # [1] 파일 확인 및 처리
+# 3. 모델 로드 함수 (서버 시작 시 한 번만 실행)
+@app.on_event("startup")
+async def load_model():
+    global model
     try:
-        # 파일명을 기반으로 시뮬레이션 결과를 조정하기 위해 파일명을 사용합니다.
-        file_name = file.filename if file.filename else "unknown_file"
-        
-        # 실제 환경이라면 여기서 PIL로 이미지를 열고 모델에 전달합니다.
-        # contents = await file.read()
-        # image = Image.open(io.BytesIO(contents))
-        
+        # 모델 구조 정의 (EfficientNet B0)
+        model = models.efficientnet_b0(weights=None)
+        num_ftrs = model.classifier[1].in_features
+        model.classifier[1] = nn.Linear(num_ftrs, NUM_CLASSES)
+
+        # 학습된 weight 로드
+        checkpoint = torch.load(MODEL_PATH, map_location=DEVICE, weights_only=False)
+        model.load_state_dict(checkpoint)
+
+        model.to(DEVICE)
+        model.eval()  # 평가 모드로 설정
+        print(f" AI 모델 로드 성공! ({DEVICE} 모드)")
+
+    except FileNotFoundError:
+        print(f" 오류: 모델 파일 '{MODEL_PATH}'를 찾을 수 없습니다. trainer.py를 먼저 실행하세요.")
+        model = None
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid file upload or file processing error: {e}")
-
-    # [2] 실제 모델 추론 대신 시뮬레이션 데이터 반환
-    # index.html의 simulateClassification 함수와 동일한 로직을 재현하여 
-    # 백엔드와 프론트엔드의 데이터 구조가 일치함을 보장합니다.
-    
-    # 1초 지연을 추가하여 AI가 실제로 분석하는 듯한 느낌을 줍니다.
-    time.sleep(1.0) 
-    
-    # 파일명을 기반으로 분류 결과 시뮬레이션 (index.html의 로직과 동일)
-    lower_case_name = file_name.lower()
-    labels = ['플라스틱', '종이', '캔', '유리', '일반쓰레기'] 
-    
-    if '종이' in lower_case_name or 'paper' in lower_case_name or '박스' in lower_case_name:
-        primary_label = '종이'
-    elif '캔' in lower_case_name or 'can' in lower_case_name or '콜라' in lower_case_name:
-        primary_label = '캔'
-    elif '유리' in lower_case_name or ('병' in lower_case_name and 'pet' not in lower_case_name and '플라스틱' not in lower_case_name):
-        primary_label = '유리'
-    elif '플라스틱' in lower_case_name or 'pet' in lower_case_name or '페트' in lower_case_name or 'bottle' in lower_case_name:
-        primary_label = '플라스틱' 
-    elif '쓰레기' in lower_case_name or 'general' in lower_case_name or '오염' in lower_case_name or '비닐' in lower_case_name:
-        primary_label = '일반쓰레기'
-    else:
-        ambiguous_labels = ['플라스틱', '유리', '일반쓰레기']
-        # 백엔드에서는 random 모듈이 없으므로, 단순 임시 값 사용
-        primary_label = ambiguous_labels[int(time.time()) % len(ambiguous_labels)]
+        print(f" 모델 로드 중 심각한 오류 발생: {e}")
+        model = None
 
 
-    predictions_list = []
-    # Top 1 신뢰도: 90% ~ 99% 사이의 값으로 설정
-    primary_confidence = 0.90 + (int(time.time() * 1000) % 100) / 1000.0 
-    predictions_list.append({"label": primary_label, "confidence": primary_confidence})
+# 4. 이미지 예측 함수
+def predict_image(image: Image.Image):
+    if model is None:
+        return "error", 0.0, "모델 로드 실패"
 
-    # 나머지 신뢰도 할당 (정렬을 위해 임시로 낮은 값 추가)
-    for label in labels:
-        if label != primary_label:
-            confidence = (int(time.time() * 100) % 10) / 100.0 # 0% ~ 10%
-            predictions_list.append({"label": label, "confidence": confidence})
+    # 이미지 전처리 및 배치 차원 추가
+    tensor = transform(image).unsqueeze(0).to(DEVICE)
 
-    # 신뢰도 순으로 정렬하여 Top 3가 되도록 준비
-    predictions_list.sort(key=lambda x: x['confidence'], reverse=True)
+    with torch.no_grad():
+        outputs = model(tensor)
+        probabilities = torch.softmax(outputs, dim=1)
 
-    # [3] 결과 반환
-    return ClassificationResult(
-        status="success",
-        predictions=predictions_list,
-        model_version="EfficientNet_V2.1"
-    )
+        # 가장 높은 확률과 해당 인덱스 찾기
+        conf, predicted_index = torch.max(probabilities, 1)
+
+        # 예측된 클래스 이름과 신뢰도: CLASS_NAMES 배열의 인덱스를 사용
+        predicted_class = CLASS_NAMES[predicted_index.item()]
+        confidence = conf.item() * 100
+
+    return predicted_class, confidence, "분석 완료"
 
 
+# ==========================================
+# 5. API 엔드포인트
+# ==========================================
+
+# 루트 엔드포인트: index.html 파일 제공
+@app.get("/", response_class=HTMLResponse)
+async def read_root():
+    try:
+        with open("index.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
+        return HTMLResponse(content=html_content, status_code=200)
+    except FileNotFoundError:
+        return HTMLResponse(content="<h1>index.html 파일을 찾을 수 없습니다.</h1>", status_code=404)
+
+
+# 예측 API 엔드포인트
+@app.post("/predict")
+async def predict(file: UploadFile = File(...)):
+    if model is None:
+        return JSONResponse({"predicted_class": "error", "confidence": 0.0, "message": "AI 모델이 로드되지 않았습니다."},
+                            status_code=500)
+
+    # PIL Image 객체로 이미지 로드 (RGB 3채널 보장)
+    contents = await file.read()
+    image = Image.open(BytesIO(contents)).convert("RGB")
+
+    # 예측 실행
+    predicted_class, confidence, message = predict_image(image)
+
+    return JSONResponse({
+        "predicted_class": predicted_class,
+        "confidence": round(confidence, 2),
+        "message": message
+    })
+
+
+# 6. Uvicorn 실행
+if __name__ == "__main__":
+    # 호스트 주소를 '127.0.0.1'로 명시하고 포트 8000 사용
+    uvicorn.run(app, host="127.0.0.1", port=DEFAULT_PORT)

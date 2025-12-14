@@ -249,6 +249,9 @@ AI 분류 도우미의 메인 화면입니다.
 ## 7. 부록 (최종 동작 화면)
 
 ### 7.1 서버 실행 성공 화면
+
+<img width="1203" height="1021" alt="8000" src="https://github.com/user-attachments/assets/b4c9892e-562b-4e8a-b0e6-c0adc8ed5a03" />
+
 \[여기에 Uvicorn running on http://127.0.0.1:8000 로그가 보이는 터미널 캡처 이미지를 삽입하세요]
 
 ### 7.2 AI 분류 시스템 웹 UI (메인 화면)

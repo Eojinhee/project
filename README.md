@@ -143,12 +143,12 @@ AI 분류 도우미의 메인 화면입니다.
 
 
 
-# 🏆 [2025학년도 캡스톤디자인 최종보고서]
+#  [2025학년도 캡스톤디자인 최종보고서]
 
-# ♻️ EfficientNet 기반 실시간 생활 폐기물 분류 시스템
+#  EfficientNet 기반 실시간 생활 폐기물 분류 시스템
 **(Real-time Waste Classification System based on EfficientNet)**
 
-## 🌟 1. 프로젝트 개요 및 목표
+##  1. 프로젝트 개요 및 목표
 
 ### 1.1 개발 배경 및 필요성
 현대 사회에서 생활 폐기물의 복합 재질화 및 오염된 폐기물의 모호한 분류 기준으로 인해 재활용 효율이 저하되고 있습니다. 특히 **'오염된 일반쓰레기'**와 **'재활용 가능한 플라스틱'** 간의 오분류는 자원 순환의 가장 큰 걸림돌입니다. 이에 본 프로젝트는 딥러닝 기술을 활용하여 폐기물을 명확히 구분하고, 사용자에게 올바른 분리배출 가이드를 제공하여 재활용 효율을 증대시키는 것을 목표로 합니다.
@@ -161,7 +161,7 @@ AI 분류 도우미의 메인 화면입니다.
 
 ---
 
-## 🛠️ 2. 개발 환경 및 이론적 배경
+##  2. 개발 환경 및 이론적 배경
 
 ### 2.1 개발 환경 (Environment)
 
@@ -180,7 +180,7 @@ AI 분류 도우미의 메인 화면입니다.
 
 ---
 
-## ⚙️ 3. 시스템 설계 및 처리 프로세스
+##  3. 시스템 설계 및 처리 프로세스
 
 ### 3.1 시스템 구성 요소 및 역할
 
@@ -198,7 +198,7 @@ AI 분류 도우미의 메인 화면입니다.
 
 ---
 
-## 🎯 4. 핵심 문제 해결 (Problem Solving) ⭐
+##  4. 핵심 문제 해결 (Problem Solving) 
 
 본 프로젝트의 가장 중요한 성과는 실제 서비스 환경에서 발생하는 **치명적인 오분류 및 하드웨어 충돌 문제**를 공학적으로 해결한 과정에 있습니다.
 
@@ -258,22 +258,9 @@ AI 분류 도우미의 메인 화면입니다.
 <img width="979" height="1121" alt="1" src="https://github.com/user-attachments/assets/9474f575-482d-4937-9d66-849c089a1838" />
 <img width="859" height="923" alt="image" src="https://github.com/user-attachments/assets/9a6a3390-0057-4898-948b-043d445e10fe" />
 
-### 7.2 AI 분류 시스템 웹 UI (메인 화면)
-<div style="display: flex; justify-content: space-around; align-items: flex-start; margin-bottom: 20px;">
-    
-    <div style="width: 48%; text-align: center; margin: 0 1%;">
-        <img width="979" alt="메인 화면 (실시간 카메라 모드)" src="https://github.com/user-attachments/assets/9474f575-482d-4937-9d66-849c089a1838" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <p style="font-size: 0.9em; margin-top: 10px; color: #555;">실시간 카메라 모드</p>
-    </div>
-    
-    <div style="width: 48%; text-align: center; margin: 0 1%;">
-        <img width="859" alt="메인 화면 (앨범 업로드 모드)" src="https://github.com/user-attachments/assets/9a6a3390-0057-4898-948b-043d445e10fe" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <p style="font-size: 0.9em; margin-top: 10px; color: #555;">앨범 업로드 모드</p>
-    </div>
-    
-</div>
 
-### 7.3 최종 분류 결과 화면 (문제 해결 증명) ⭐
+
+### 7.3 최종 분류 결과 화면 (문제 해결 증명) 
 
 | 항목 | 내용 |
 | :--- | :--- |

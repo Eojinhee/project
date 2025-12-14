@@ -284,5 +284,5 @@ AI 분류 도우미의 메인 화면입니다.
 
 * Tan, M., & Le, Q. V. (2019). EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks.
 * PyTorch Documentation and Tutorials.
-* **[주요 데이터셋 출처]** (Waste Classification Dataset, Kaggle Repository)
-* \[추가적으로 사용하신 공개 데이터셋의 출처 및 논문/링크]
+* **[주요 데이터셋 출처]** [(Waste Classification Dataset, Kaggle Repository)](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification)
+* **[ 보강 데이터]** (Google Image Search and Manual Collection for specific General Waste types)

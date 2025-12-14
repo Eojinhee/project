@@ -255,7 +255,9 @@ AI 분류 도우미의 메인 화면입니다.
 \[여기에 Uvicorn running on http://127.0.0.1:8000 로그가 보이는 터미널 캡처 이미지를 삽입하세요]
 
 ### 7.2 AI 분류 시스템 웹 UI (메인 화면)
-\[여기에 프로젝트의 메인 웹 UI 캡처 이미지를 삽입하세요]
+\[여<img width="979" height="1121" alt="1" src="https://github.com/user-attachments/assets/9474f575-482d-4937-9d66-849c089a1838" /><img width="859" height="923" alt="image" src="https://github.com/user-attachments/assets/9a6a3390-0057-4898-948b-043d445e10fe" />
+
+기에 프로젝트의 메인 웹 UI 캡처 이미지를 삽입하세요]
 
 ### 7.3 최종 분류 결과 화면 (문제 해결 증명) ⭐
 

@@ -138,6 +138,19 @@
 
 
 
+<table>
+  <tr>
+    <td style="text-align: center; width: 50%; padding: 0 10px;">
+      <img width="979" alt="메인 화면 (실시간 카메라 모드)" src="https://github.com/user-attachments/assets/9474f575-482d-4937-9d66-849c089a1838" style="max-width: 100%; height: auto;">
+      <p style="font-size: 0.9em; margin-top: 10px; color: #555;">실시간 카메라 모드</p>
+    </td>
+    <td style="text-align: center; width: 50%; padding: 0 10px;">
+      <img width="859" alt="메인 화면 (앨범 업로드 모드)" src="https://github.com/user-attachments/assets/9a6a3390-0057-4898-948b-043d445e10fe" style="max-width: 100%; height: auto;">
+      <p style="font-size: 0.9em; margin-top: 10px; color: #555;">앨범 업로드 모드</p>
+    </td>
+  </tr>
+</table>
+
 ### 7.3 최종 분류 결과 화면 (문제 해결 증명) 
 
 <img width="868" height="1002" alt="3" src="https://github.com/user-attachments/assets/966eeb20-3549-442a-9b38-19e6be0312b1" />

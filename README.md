@@ -3,6 +3,7 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-Framework-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=Python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=flat-square&logo=fastapi&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
 ![CUDA](https://img.shields.io/badge/NVIDIA_CUDA-GPU_Compute-76B900?style=flat-square&logo=nvidia&logoColor=white)
 
 ---

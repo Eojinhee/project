@@ -130,15 +130,31 @@
 
 ---
 
-## 7. 부록 (최종 동작 화면)
+## 7. 제출 형식 (섹션 9와 동일하게 반영)
 
-### 7.1 서버 실행 성공 화면
+프로젝트의 실행 환경 및 최종 결과를 명확히 입증하기 위한 필수 제출 자료를 다음과 같이 요약합니다.
+
+### 📺 시연 영상 (필수)
+
+| 항목 | 내용 |
+| :--- | :--- |
+| **제출 형태** | YouTube 링크 |
+| **영상 길이** | 약 2분 (권장) |
+| **내용** | **AI 폐기물 분류 시스템 시연**<br>1. **웹캠 실시간 분류:** 웹캠을 켜고 실제 폐기물을 카메라에 비춰 실시간 분류 결과 시연.<br>2. **이미지 파일 업로드:** 이미지 파일을 업로드하여 분류 결과(클래스, 신뢰도) 및 가이드 표시.<br>3. **핵심 문제 해결 시연:** '흰색 배경에서의 일반쓰레기 오분류 문제' 해결을 검증하는 테스트 시연. |
+| **예시 링크** | `https://youtu.be/efficientnet_waste_demo` (제출 시 실제 링크로 대체) |
+
+
+---
+
+## 8. 부록 (최종 동작 화면)
+
+### 8.1 서버 실행 성공 화면
 
 <img width="1203" height="1021" alt="8000" src="https://github.com/user-attachments/assets/b4c9892e-562b-4e8a-b0e6-c0adc8ed5a03" />
 
 
 
-### 7.2 AI 분류 시스템 웹 UI (메인 화면)
+### 8.2 AI 분류 시스템 웹 UI (메인 화면)
 
 <table>
   <tr>
@@ -153,7 +169,7 @@
   </tr>
 </table>
 
-### 7.3 최종 분류 결과 화면 (문제 해결 증명) 
+### 8.3 최종 분류 결과 화면 (문제 해결 증명) 
 
 <img width="868" height="1002" alt="3" src="https://github.com/user-attachments/assets/966eeb20-3549-442a-9b38-19e6be0312b1" />
 
@@ -177,7 +193,7 @@
 
 ---
 
-## 8. 참고 문헌
+## 9. 참고 문헌
 
 * Tan, M., & Le, Q. V. (2019). EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks.
 * PyTorch Documentation and Tutorials.

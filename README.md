@@ -130,7 +130,16 @@
 
 ---
 
-## 7. 제출 형식
+
+## 7. 개인 소감
+
+이번 프로젝트는 단순히 주피터 노트북(Jupyter Notebook) 안에서 끝나는 모델링이 아니라, 실제 사용자가 쓸 수 있는 웹 서비스로 구현해 보았다는 점에서 큰 의미가 있었습니다.
+
+특히 PyTorch로 학습한 모델을 FastAPI 서버에 올리고, 웹캠의 하드웨어 충돌 문제를 JavaScript로 직접 해결하여 실시간으로 쓰레기가 분류되는 모습을 보았을 때 큰 성취감을 느꼈습니다. 이론으로만 알던 딥러닝 기술을 실제 소프트웨어에 통합(Integration)해 보며, AI 기술이 실생활의 문제를 해결하는 도구가 될 수 있음을 확신하게 되었습니다. 이번 경험을 바탕으로 앞으로 더 복잡하고 유용한 AI 서비스를 구축해 보고 싶습니다.
+
+---
+
+## 8. 제출 형식
 프로젝트의 실행 환경 및 최종 결과를 명확히 입증하기 위한 필수 제출 자료를 다음과 같이 요약합니다.
 
 ### 📺 시연 영상 (필수)
@@ -145,15 +154,15 @@
 
 ---
 
-## 8. 부록 (최종 동작 화면)
+## 9. 부록 (최종 동작 화면)
 
-### 8.1 서버 실행 성공 화면
+### 9.1 서버 실행 성공 화면
 
 <img width="1203" height="1021" alt="8000" src="https://github.com/user-attachments/assets/b4c9892e-562b-4e8a-b0e6-c0adc8ed5a03" />
 
 
 
-### 8.2 AI 분류 시스템 웹 UI (메인 화면)
+### 9.2 AI 분류 시스템 웹 UI (메인 화면)
 
 <table>
   <tr>
@@ -168,7 +177,7 @@
   </tr>
 </table>
 
-### 8.3 최종 분류 결과 화면 (문제 해결 증명) 
+### 9.3 최종 분류 결과 화면 (문제 해결 증명) 
 
 <img width="868" height="1002" alt="3" src="https://github.com/user-attachments/assets/966eeb20-3549-442a-9b38-19e6be0312b1" />
 
@@ -192,7 +201,7 @@
 
 ---
 
-## 9. 참고 문헌
+## 10. 참고 문헌
 
 * Tan, M., & Le, Q. V. (2019). EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks.
 * PyTorch Documentation and Tutorials.

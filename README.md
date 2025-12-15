@@ -209,23 +209,3 @@
 * **[주요 데이터 출처]** [(Waste Classification Dataset, Kaggle Repository)](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification)
 * **[보강 데이터 출처]** (Google Image Search and Manual Collection for specific General Waste types)
 
-
-
-
-### 3.1 시스템 아키텍처 및 데이터 흐름 (System Architecture)
-
-본 시스템은 **Client(Presentation) - Server(Application) - AI(Model)**의 3계층 구조로 설계되어 데이터 처리의 효율성과 확장성을 확보했습니다.
-
-```mermaid
-graph TD
-    User([사용자 User]) -->|1. 웹캠/이미지 입력| Client[🖥️ Client (Web UI)]
-    Client -->|2. HTTP Request (Image)| Server[⚙️ Server (FastAPI)]
-    
-    subgraph Backend
-    Server -->|3. 전처리 (Resize/Normalize)| Server
-    Server -->|4. 추론 요청 (Tensor)| AI[🧠 AI Engine (EfficientNet-B0)]
-    AI -->|5. 결과 반환 (Class/Confidence)| Server
-    end
-    
-    Server -->|6. JSON Response| Client
-    Client -->|7. 결과 및 가이드 시각화| User

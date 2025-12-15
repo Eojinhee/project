@@ -71,13 +71,13 @@
 | 항목 | 성능 지표 | 값 |
 | :--- | :--- | :--- |
 | **총 학습량 (Epochs)** | Iterations | **20 Epochs** |
-| **최고 검증 정확도 (Best Validation Acc)** | Accuracy | **[95.88]%** |
+| **최고 검증 정확도 (Best Validation Acc)** | Accuracy | **95.88%** |
 | **GPU (CUDA) 추론 시간** | 평균 | 약 0.2초 ~ 0.5초 (실시간 처리 가능) |
 | **CPU 추론 시간** | 평균 | 약 1.5초 ~ 2.5초 |
 
 ### 4.2 결과 분석 및 결론
 
-최종 모델은 데이터 보강과 증강(Augmentation) 강화를 통해, 프로젝트의 가장 큰 난제였던 **'흰색 배경에서의 일반쓰레기 오분류' 문제**를 성공적으로 해결하며 **[95.88]%**의 검증 정확도를 달성했습니다. 또한, 프론트엔드 장치 제어 로직 개선을 통해 다양한 사용자 환경에서의 호환성을 확보하였습니다.
+최종 모델은 데이터 보강과 증강(Augmentation) 강화를 통해, 프로젝트의 가장 큰 난제였던 **'흰색 배경에서의 일반쓰레기 오분류' 문제**를 성공적으로 해결하며 95.88% 의 검증 정확도를 달성했습니다. 또한, 프론트엔드 장치 제어 로직 개선을 통해 다양한 사용자 환경에서의 호환성을 확보하였습니다.
 
 
 ---
@@ -185,7 +185,7 @@
 | :--- | :--- |
 | **업로드된 이미지** | 일반쓰레기 봉투 사진 |
 | **AI 분석 결과** | **일반쓰레기 (General)** |
-| **신뢰도** | **[100]%** |
+| **신뢰도** | **100%** |
 | **분리배출 가이드** | 종량제 봉투에 담아 버리세요. |
 
 ---
@@ -206,7 +206,7 @@
 * Tan, M., & Le, Q. V. (2019). EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks.
 * PyTorch Documentation and Tutorials.
 * **[주요 데이터 출처]** [(Waste Classification Dataset, Kaggle Repository)](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification)
-* **[ 보강 데이터 출처]** (Google Image Search and Manual Collection for specific General Waste types)
+* **[보강 데이터 출처]** (Google Image Search and Manual Collection for specific General Waste types)
 
 
 

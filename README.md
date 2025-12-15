@@ -1,4 +1,4 @@
-#  AI 기반 생활 폐기물 분류 시스템
+#  AI 기반 폐기물 분류 시스템
 
 ![PyTorch](https://img.shields.io/badge/PyTorch-Framework-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=Python&logoColor=white)
